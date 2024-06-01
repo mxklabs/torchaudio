@@ -492,6 +492,33 @@ def _mel_to_hz(mels: Tensor, mel_scale: str = "htk") -> Tensor:
     return freqs
 
 
+def cqt_frequencies(
+    n_bins: int,
+    f_min: float,
+    bins_per_octave: int = 12,
+    tuning: float = 0.0
+) -> Tensor:
+    """Compute the center frequencies of Constant-Q Transform (CQT) bins.
+
+    Implementation ported from *librosa*.
+
+    Args:
+        n_bins (int): Number of constant-Q bins
+        f_min (float): Frequency of lowest bin
+        bins_per_octave (int): Number of bins per octave
+        tuning (float): Deviation from A440 tuning in fractional bins
+
+    Returns:
+        frequencies (Tensor): Center frequency for each CQT bin
+    """
+    correction: float = 2.0 ** (float(tuning) / bins_per_octave)
+    frequencies: Tensor = 2.0 ** (
+        torch.arange(0, n_bins, dtype=torch.float64) / bins_per_octave
+    )
+
+    return correction * f_min * frequencies
+
+
 def _create_triangular_filterbank(
     all_freqs: Tensor,
     f_pts: Tensor,

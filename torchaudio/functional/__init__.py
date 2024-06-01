@@ -31,6 +31,7 @@ from .functional import (
     compute_deltas,
     convolve,
     create_dct,
+    cqt_frequencies,
     DB_to_amplitude,
     deemphasis,
     detect_pitch_frequency,

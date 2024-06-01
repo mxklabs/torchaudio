@@ -96,6 +96,19 @@ class Functional(TestBaseMixin):
         )
         self.assertEqual(result, torch.from_numpy(expected), atol=7e-5, rtol=1.3e-6)
 
+    @nested_params(
+        [
+            param(f_min=27.5, n_bins=60, bins_per_octave=24),
+            param(f_min=440.0, n_bins=12, bins_per_octave=12),
+            param(f_min=1234, n_bins=56, bins_per_octave=78),
+            param(f_min=440.0, n_bins=1, bins_per_octave=5),
+        ]
+    )
+    def test_cqt_frequencies(self, f_min, n_bins, bins_per_octave):
+        expected = librosa.cqt_frequencies(fmin=f_min, n_bins=n_bins, bins_per_octave=bins_per_octave)
+        result = F.cqt_frequencies(f_min=f_min, n_bins=n_bins, bins_per_octave=bins_per_octave)
+        self.assertEqual(result, torch.from_numpy(expected), atol=7e-5, rtol=1.3e-6)
+
     def test_amplitude_to_DB_power(self):
         amin = 1e-10
         db_multiplier = 0.0
