@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Union
 
 import torch
 import torchaudio
-from torch import Tensor
+from torch import Tensor, device
 from torchaudio._internal.module_utils import deprecated
 
 from .filtering import highpass_biquad, treble_biquad
@@ -496,9 +496,12 @@ def cqt_frequencies(
     n_bins: int,
     f_min: float,
     bins_per_octave: int = 12,
-    tuning: float = 0.0
+    tuning: float = 0.0,
+    device: device = 'cpu'
 ) -> Tensor:
     """Compute the center frequencies of Constant-Q Transform (CQT) bins.
+
+    .. devices:: CPU CUDA
 
     Implementation ported from *librosa*.
 
@@ -507,13 +510,14 @@ def cqt_frequencies(
         f_min (float): Frequency of lowest bin
         bins_per_octave (int): Number of bins per octave
         tuning (float): Deviation from A440 tuning in fractional bins
+        device (Device): Torch device to use.
 
     Returns:
         frequencies (Tensor): Center frequency for each CQT bin
     """
     correction: float = 2.0 ** (float(tuning) / bins_per_octave)
     frequencies: Tensor = 2.0 ** (
-        torch.arange(0, n_bins, dtype=torch.float64) / bins_per_octave
+        torch.arange(0, n_bins, dtype=torch.float64, device=device) / bins_per_octave
     )
 
     return correction * f_min * frequencies
